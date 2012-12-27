@@ -12,7 +12,22 @@ private {
 }
 
 
-void initialize() {
+void initialize(bool enable_plugins, bool enable_javascript, bool enable_databases,
+                string package_path, string locale_path, string user_data_path, string plugin_path,
+                string log_path, awe_loglevel loglevel, bool force_single_process,
+                string child_process_path, bool enable_autodetect_encoding,
+                string accept_language_override, string default_charset_override,
+                string user_agent_override, string proxy_server, string proxy_config_script,
+                string auth_server_whitelist, bool save_cache_and_cookies, int max_cache_size,
+                bool disable_same_origin_policy, bool disable_win_message_pump, string custom_css) {
+    awe_call!awe_webcore_initialize(enable_plugins, enable_javascript, enable_databases,
+                                    package_path, locale_path, user_data_path, plugin_path,
+                                    log_path, loglevel, force_single_process,
+                                    child_process_path, enable_autodetect_encoding,
+                                    accept_language_override, default_charset_override,
+                                    user_agent_override, proxy_server, proxy_config_script,
+                                    auth_server_whitelist, save_cache_and_cookies, max_cache_size,
+                                    disable_same_origin_policy, disable_win_message_pump, custom_css);
 }
 
 //alias awe_webcore_initialize_default initialize_default;
