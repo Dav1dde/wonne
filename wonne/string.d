@@ -14,12 +14,17 @@ struct AWEString {
     ///
     alias raw this;
 
-    /// Creates an awe_string* from a string. Keep a reference to the string!
+    /// Creates an AWEString from an awe_string.
+    this(awe_string* inp) {
+        raw = inp;
+    }
+
+    /// Creates an AWEString from a string. Keep a reference to the original string!
     this(string inp) {
         raw = awe_string_create_from_utf8(inp.toStringz(), inp.length);
     }
 
-    /// Creates an awe_string* from a wstring. Keep a reference to the string!
+    /// Creates an AWEString from a wstring. Keep a reference to the original string!
     this(wstring inp) {
         raw = awe_string_create_from_utf16(inp.toUTF16z(), inp.length);
     }

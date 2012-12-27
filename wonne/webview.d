@@ -43,11 +43,11 @@ class Webview {
     }
 
     int get_history_back_count() {
-        awe_call!awe_webview_get_history_back_count(webview);
+        return awe_call!awe_webview_get_history_back_count(webview);
     }
 
     int get_history_forward_count() {
-        awe_call!awe_webview_get_history_forward_count(webview);
+        return awe_call!awe_webview_get_history_forward_count(webview);
     }
 
     void stop() {
@@ -204,7 +204,7 @@ class Webview {
     }
 
     void add_url_filter(string filter) {
-        awe_webview_add_url_filter(webview, filter);
+        awe_call!awe_webview_add_url_filter(webview, filter);
     }
 
     void clear_all_url_filters() {
@@ -212,9 +212,9 @@ class Webview {
     }
 
     // TODO: fix string arrays
-    void set_header_definition(string name, size_t num_fields, string[] field_names, string[] field_values) {
-        awe_call!awe_webview_set_header_definition(webview, name, num_fields, field_names, field_values);
-    }
+//     void set_header_definition(string name, size_t num_fields, string[] field_names, string[] field_values) {
+//         awe_call!awe_webview_set_header_definition(webview, name, num_fields, field_names, field_values);
+//     }
 
     void add_header_rewrite_rule(string rule, string name) {
         awe_call!awe_webview_add_header_rewrite_rule(webview, rule, name);
@@ -225,7 +225,7 @@ class Webview {
     }
 
     void remove_header_rewrite_rules_by_definition_name(string name) {
-        awe_call!awe_webview_remove_header_rewrite_rule_by_definition_name(webview, name);
+        awe_call!awe_webview_remove_header_rewrite_rules_by_definition_name(webview, name);
     }
 
     void choose_file(string file_path) {
@@ -253,11 +253,11 @@ class Webview {
     }
 
     void activate_ime(bool activate) {
-        awe_webview_activiate_ime(webview, activate);
+        awe_webview_activate_ime(webview, activate);
     }
 
     void set_ime_composition(string input_string, int cursor_pos, int target_start, int target_end) {
-        awe_call!awe_webview_set_imte_composition(webview, input_string, cursor_pos, target_start, target_end);
+        awe_call!awe_webview_set_ime_composition(webview, input_string, cursor_pos, target_start, target_end);
     }
 
     void confirm_ime_composition(string input_string) {
