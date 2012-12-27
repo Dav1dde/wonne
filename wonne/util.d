@@ -5,6 +5,7 @@ private {
     
     import wonne.string;
     import wonne.webview;
+    import wonne.renderbuffer;
     
     import std.typetuple : TypeTuple, allSatisfy, anySatisfy;
     import std.traits : ReturnType, Unqual;
@@ -63,6 +64,8 @@ auto awe_call(alias func, Args...)(Args args) {
             return to!string(AWEString(cast(awe_string*)ret)); // awe_ functions return const(awe_string)*
         } else static if(is(RetType : awe_webview*)) {
             return new Webview(ret);
+        } else static if(is(RetType : const(awe_renderbuffer)*)) {
+            return Renderbuffer(ret);
         } else {
             return ret;
         }

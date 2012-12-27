@@ -3,6 +3,7 @@ module wonne.webview;
 private {
     import deimos.awesomium.awesomium;
 
+    import wonne.renderbuffer : Renderbuffer;
     import wonne.util : awe_call;
 }
 
@@ -102,8 +103,7 @@ class Webview {
         return awe_call!awe_webview_get_dirty_bounds(webview);
     }
 
-    // TODO: renderbuffer
-    const(awe_renderbuffer)* render() {
+    Renderbuffer render() {
         return awe_call!awe_webview_render(webview);
     }
 
