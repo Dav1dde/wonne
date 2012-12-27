@@ -10,7 +10,8 @@ private {
 
 struct AWEString {
     /// Holds the internal awe_string*
-    private awe_string* raw;
+    awe_string* raw;
+    ///
     alias raw this;
 
     /// Creates an awe_string* from a string. Keep a reference to the string!
