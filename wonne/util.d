@@ -51,15 +51,17 @@ auto awe_call(alias func, Args...)(Args args) {
         alias args new_args;
     }
 
-    static if(is(ReturnType!func == void)) {
+    alias ReturnType!func RetType;
+
+    static if(is(RetType == void)) {
         return func(new_args);
     } else {
         auto ret = func(new_args);
 
-        static if(is(Unqual!(typeof(ret)) == awe_string*)) {
-            return to!string(AWEString(cast()ret)); // awe_ functions return const(awe_string)*
-        } else static if(is(Unqual!(typeof(ret)) == awe_webview*)) {
-            return new Webview(awe_webview);
+        static if(is(RetType : const(awe_string)*)) {
+            return to!string(AWEString(cast(awe_string*)ret)); // awe_ functions return const(awe_string)*
+        } else static if(is(RetType : const(awe_webview)*)) {
+            return new Webview(cast(awe_webview*)ret);
         } else {
             return ret;
         }

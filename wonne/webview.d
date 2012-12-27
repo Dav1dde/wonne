@@ -19,7 +19,7 @@ class Webview {
     }
 
     ~this() {
-        awe_webview_destroy(webview);
+        awe_call!awe_webview_destroy(webview);
     }
 
     void load_url(string url, string frame_name="", string username="", string password="") {
@@ -39,7 +39,7 @@ class Webview {
     }
 
     void go_to_history_offset(int offset) {
-        awe_webview_go_to_history_offset(webview, offset);
+        awe_call!awe_webview_go_to_history_offset(webview, offset);
     }
 
     int get_history_back_count() {
@@ -51,11 +51,11 @@ class Webview {
     }
 
     void stop() {
-        awe_webview_stop(webview);
+        awe_call!awe_webview_stop(webview);
     }
 
     void reload() {
-        awe_webview_reload(webview);
+        awe_call!awe_webview_reload(webview);
     }
 
     void execute_javascript(string javascript, string frame_name="") {
@@ -108,60 +108,60 @@ class Webview {
     }
 
     void pause_rendering() {
-        awe_webview_pause_rendering(webview);
+        awe_call!awe_webview_pause_rendering(webview);
     }
 
     void resume_rendering() {
-        awe_webview_resume_rendering(webview);
+        awe_call!awe_webview_resume_rendering(webview);
     }
 
     void inject_mouse_move(int x, int y) {
-        awe_webview_inject_mouse_move(webview, x, y);
+        awe_call!awe_webview_inject_mouse_move(webview, x, y);
     }
 
     void inject_mouse_down(awe_mousebutton mouse_button) {
-        awe_webview_inject_mouse_down(webview, mouse_button);
+        awe_call!awe_webview_inject_mouse_down(webview, mouse_button);
     }
 
     void inject_mouse_up(awe_mousebutton mouse_button) {
-        awe_webview_inject_mouse_up(webview, mouse_button);
+        awe_call!awe_webview_inject_mouse_up(webview, mouse_button);
     }
 
     void inject_mouse_wheel(int scroll_amount_vert, int scroll_amount_horz) {
-        awe_webview_inject_mouse_wheel(webview, scroll_amount_vert, scroll_amount_horz);
+        awe_call!awe_webview_inject_mouse_wheel(webview, scroll_amount_vert, scroll_amount_horz);
     }
 
     // TODO: webkeyboardevent
     void inject_keyboard_event(awe_webkeyboardevent key_event) {
-        awe_webview_inject_keyboard_event(webview, key_event);
+        awe_call!awe_webview_inject_keyboard_event(webview, key_event);
     }
 
     void cut() {
-        awe_webview_cut(webview);
+        awe_call!awe_webview_cut(webview);
     }
 
     void copy() {
-        awe_webview_copy(webview);
+        awe_call!awe_webview_copy(webview);
     }
 
     void paste() {
-        awe_webview_paste(webview);
+        awe_call!awe_webview_paste(webview);
     }
 
     void select_all() {
-        awe_webview_select_all(webview);
+        awe_call!awe_webview_select_all(webview);
     }
 
     void copy_image_at(int x, int y) {
-        awe_webview_copy_image_at(webview, x, y);
+        awe_call!awe_webview_copy_image_at(webview, x, y);
     }
 
     void set_zoom(int zoom_percent) {
-        awe_webview_set_zoom(webview, zoom_percent);
+        awe_call!awe_webview_set_zoom(webview, zoom_percent);
     }
 
     void reset_zoom(int reset_zoom) {
-        awe_webview_reset_zoom(webview);
+        awe_call!awe_webview_reset_zoom(webview);
     }
 
     int get_zoom() {
@@ -184,15 +184,15 @@ class Webview {
     }
 
     void unfocus() {
-        awe_webview_unfocus(webview);
+        awe_call!awe_webview_unfocus(webview);
     }
 
     void focus() {
-        awe_webview_focus(webview);
+        awe_call!awe_webview_focus(webview);
     }
 
     void set_transparent(bool is_transparent) {
-        awe_webview_set_transparent(webview, is_transparent);
+        awe_call!awe_webview_set_transparent(webview, is_transparent);
     }
 
     bool is_transparent() {
@@ -200,7 +200,7 @@ class Webview {
     }
 
     void set_url_filtering_mode(awe_url_filtering_mode mode) {
-        awe_webview_set_url_filtering_mode(webview, mode);
+        awe_call!awe_webview_set_url_filtering_mode(webview, mode);
     }
 
     void add_url_filter(string filter) {
@@ -208,7 +208,7 @@ class Webview {
     }
 
     void clear_all_url_filters() {
-        awe_webview_clear_all_url_filters(webview);
+        awe_call!awe_webview_clear_all_url_filters(webview);
     }
 
     // TODO: fix string arrays
@@ -233,7 +233,7 @@ class Webview {
     }
 
     void print() {
-        awe_webview_print(webview);
+        awe_call!awe_webview_print(webview);
     }
 
     void request_scroll_data(string frame_name="") {
@@ -245,7 +245,7 @@ class Webview {
     }
 
     void stop_find(bool clear_selection) {
-        awe_webview_stop_find(webview, clear_selection);
+        awe_call!awe_webview_stop_find(webview, clear_selection);
     }
 
     void translate_page(string source_language, string target_language) {
@@ -253,7 +253,7 @@ class Webview {
     }
 
     void activate_ime(bool activate) {
-        awe_webview_activate_ime(webview, activate);
+        awe_call!awe_webview_activate_ime(webview, activate);
     }
 
     void set_ime_composition(string input_string, int cursor_pos, int target_start, int target_end) {
@@ -265,7 +265,7 @@ class Webview {
     }
 
     void cancel_ime_composition() {
-        awe_webview_cancel_ime_composition(webview);
+        awe_call!awe_webview_cancel_ime_composition(webview);
     }
 
     void login(int request_id, string username, string password) {
@@ -273,7 +273,7 @@ class Webview {
     }
 
     void cancel_login(int request_id) {
-        awe_webview_cancel_login(webview, request_id);
+        awe_call!awe_webview_cancel_login(webview, request_id);
     }
 
     void close_javascript_dialog(int request_id, bool was_cancelled, string prompt_text) {

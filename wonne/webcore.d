@@ -17,12 +17,12 @@ void initialize() {
 
 //alias awe_webcore_initialize_default initialize_default;
 void initialize_default() {
-    awe_webcore_initialize_default();
+    awe_call!awe_webcore_initialize_default();
 }
 
 //alias awe_webcore_shutdown shutdown;
 void shutdown() {
-    awe_webcore_shutdown();
+    awe_call!awe_webcore_shutdown();
 }
 
 void set_base_directory(string base_dir_path) {
@@ -39,35 +39,35 @@ void set_custom_response_page(int status_code, string file_path) {
 
 //alias awe_webcore_update update;
 void update() {
-    awe_webcore_update();
+    awe_call!awe_webcore_update();
 }
 
 
 string get_base_directory() {
-    return awe_webcore_get_base_directory();
+    return awe_call!awe_webcore_get_base_directory();
 }
 
 //alias awe_webcore_are_plugins_enabled are_plugins_enabled;
 bool are_plugins_enabled() {
-    return awe_webcore_are_plugins_enabled();
+    return awe_call!awe_webcore_are_plugins_enabled();
 }
 
 //alias awe_webcore_clear_cache clear_cache;
 void clear_cache() {
-    awe_webcore_clear_cache();
+    awe_call!awe_webcore_clear_cache();
 }
 
 //alias awe_webcore_clear_cookies clear_cookies;
 void clear_cookies() {
-    awe_webcore_clear_cookies();
+    awe_call!awe_webcore_clear_cookies();
 }
 
 void set_cookie(string url, string cookie_string, bool is_http_only, bool force_session_cookie) {
     awe_call!awe_webcore_set_cookie(url, cookie_string, is_http_only, force_session_cookie);
 }
 
-string get_cookie(string url, bool execute_http_only) {
-    return awe_call!awe_webcore_get_cookie(url, execute_http_only);
+string get_cookies(string url, bool execute_http_only) {
+    return awe_call!awe_webcore_get_cookies(url, execute_http_only);
 }
 
 void delete_cookie(T, S)(string url, string cookie_name) {
@@ -75,7 +75,7 @@ void delete_cookie(T, S)(string url, string cookie_name) {
 }
 
 void set_suppress_printer_dialog(bool suppress) {
-    awe_webcore_set_suppress_printer_dialog(suppress);
+    awe_call!awe_webcore_set_suppress_printer_dialog(suppress);
 }
 
 // TODO: returntype
