@@ -25,7 +25,7 @@ void shutdown() {
     awe_webcore_shutdown();
 }
 
-void set_base_directory(T)(T base_dir_path) if(is_awe_string!T) {
+void set_base_directory(string base_dir_path) {
     awe_call!awe_webcore_set_base_directory(base_dir_path);
 }
 
@@ -33,7 +33,7 @@ Webview create_webview(int width, int height, bool view_source) {
     return awe_call!awe_webcore_create_webview(width, height, view_source);
 }
 
-void set_custom_response_page(T)(int status_code, T file_path) if(is_awe_string!T) {
+void set_custom_response_page(int status_code, string file_path) {
     awe_call!awe_webcore_set_custom_response_page(status_code, file_path);
 }
 
@@ -62,15 +62,15 @@ void clear_cookies() {
     awe_webcore_clear_cookies();
 }
 
-void set_cookie(T, S)(T url, S cookie_string, bool is_http_only, bool force_session_cookie) if(is_awe_string!(T, S)) {
+void set_cookie(string url, string cookie_string, bool is_http_only, bool force_session_cookie) {
     awe_call!awe_webcore_set_cookie(url, cookie_string, is_http_only, force_session_cookie);
 }
 
-string get_cookie(T)(T url, bool execute_http_only) if(is_awe_string!T) {
+string get_cookie(string url, bool execute_http_only) {
     return awe_call!awe_webcore_get_cookie(url, execute_http_only);
 }
 
-void delete_cookie(T, S)(T url, S cookie_name) if(is_awe_string!(T, S)) {
+void delete_cookie(T, S)(string url, string cookie_name) {
     awe_call!awe_webcore_delete_cookie(url, cookie_name);
 }
 
@@ -79,6 +79,6 @@ void set_suppress_printer_dialog(bool suppress) {
 }
 
 // TODO: returntype
-auto query_history(T)(T full_text_query, int num_days_ago, int max_count) if(is_awe_string!T) {
+auto query_history(string full_text_query, int num_days_ago, int max_count) {
     return awe_call!awe_webcore_query_history(full_text_query, num_days_ago, max_count);
 }
