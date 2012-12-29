@@ -4,6 +4,7 @@ private {
     import deimos.awesomium.awesomium;
 
     import wonne.renderbuffer : Renderbuffer;
+    import wonne.javascript : JSValue;
     import wonne.util : awe_call;
 }
 
@@ -73,12 +74,10 @@ class Webview {
         awe_call!awe_webview_execute_javascript(webview, javascript, frame_name);
     }
 
-    // TODO: returnvale
-    auto execute_javascript_with_result(string javascript, string frame_name="", int timeout_ms=0) {
-        awe_call!awe_webview_execute_javascript_with_result(webview, javascript, frame_name, timeout_ms);
+    JSValue execute_javascript_with_result(string javascript, string frame_name="", int timeout_ms=0) {
+        return awe_call!awe_webview_execute_javascript_with_result(webview, javascript, frame_name, timeout_ms);
     }
 
-    // TODO: jsarray
     void call_javascript_function(string object, string function_, const(awe_jsarray)* arguments, string frame_name="") {
         awe_call!awe_webview_call_javascript_function(webview, object, function_, arguments, frame_name);
     }
@@ -222,9 +221,11 @@ class Webview {
     }
 
     // TODO: fix string arrays
-//     void set_header_definition(string name, size_t num_fields, string[] field_names, string[] field_values) {
-//         awe_call!awe_webview_set_header_definition(webview, name, num_fields, field_names, field_values);
-//     }
+    void set_header_definition(string name, string[] field_names, string[] field_values)
+        in { assert(field_names.length == field_values.length, "field_names.length doesn't match field_values.length"); }
+        body {
+            awe_call!awe_webview_set_header_definition(webview, name, field_names.length, field_names, field_values);
+        }
 
     void add_header_rewrite_rule(string rule, string name) {
         awe_call!awe_webview_add_header_rewrite_rule(webview, rule, name);

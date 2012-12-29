@@ -37,6 +37,13 @@ auto awe_call(alias func, Args...)(Args args) {
         foreach(i, arg; args) {
             static if(is(typeof(arg) == string) || is(typeof(arg) == wstring)) {
                 new_args[i] = AWEString(arg);
+            } else static if(is(typeof(arg) == string[]) || is(typeof(arg) == wstring[])) {
+                awe_string*[] awe_string_array;
+                awe_string_array.length = arg.length;
+                foreach(ii, element; arg) {
+                    awe_string_array[ii] = AWEString(element);
+                }
+                new_args[i] = awe_string_array.ptr;
             } else {
                 new_args[i] = arg;
             }
@@ -89,6 +96,8 @@ template convert_strings_impl(T...) {
         alias TypeTuple!() convert_strings_impl;
     } else static if(is(T[0] == string) || is(T[0] == wstring)) {
         alias TypeTuple!(AWEString, convert_strings_impl!(T[1..$])) convert_strings_impl;
+    } else static if(is(T[0] == string[]) || is(T[0] == wstring[])) {
+        alias TypeTuple!(awe_string**, convert_strings_impl!(T[1..$])) convert_strings_impl;
     } else {
         alias TypeTuple!(T[0], convert_strings_impl!(T[1..$])) convert_strings_impl;
     }
