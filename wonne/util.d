@@ -65,7 +65,7 @@ auto awe_call(alias func, Args...)(Args args) {
             // There is no need to free an awe_string* coming from awesomium!
             return to!string(AWEString(cast(awe_string*)ret)); // awe_ functions return const(awe_string)*
         } else static if(is(RetType : awe_webview*)) {
-            return new Webview(ret);
+            return Webview.from_awe_webview(ret);
         } else static if(is(RetType : const(awe_renderbuffer)*)) {
             return Renderbuffer(ret);
         } else static if(is(RetType : const(awe_jsvalue)*)) {

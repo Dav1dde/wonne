@@ -11,11 +11,21 @@ private {
 class Webview {
     private awe_webview* webview;
 
+    private static Webview[awe_webview*] webviews;
+
     this(int width, int height, bool view_source=false) {
         this.webview = awe_webcore_create_webview(width, height, view_source);
     }
 
-    this(awe_webview* webview) {
+    static Webview from_awe_webview(awe_webview* webview) {
+        if(auto W = webview in webviews) {
+            return *W;
+        }
+
+        return new Webview(webview, true);
+    }
+    
+    private this(awe_webview* webview, bool other_ctor) {
         this.webview = webview;
     }
 
