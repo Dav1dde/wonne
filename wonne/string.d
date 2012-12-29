@@ -51,7 +51,7 @@ struct AWEString {
     }
 
     /// Frees the internal awe_string*.
-    void free() {
+    void destroy() {
         awe_string_destroy(raw);
     }
 

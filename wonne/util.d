@@ -52,7 +52,11 @@ auto awe_call(alias func, Args...)(Args args) {
         scope(exit) {
             foreach(i, arg; args) {
                 static if(is(typeof(arg) == string) || is(typeof(arg) == wstring)) {
-                    new_args[i].free();
+                    new_args[i].destroy();
+                } else static if(is(typeof(arg) == string[]) || is(typeof(arg) == wstring[])) {
+                    for(int ii=0; ii < arg.length; ii++) {
+                        awe_string_destroy(new_args[i][ii]);
+                    }
                 }
             }
         }
