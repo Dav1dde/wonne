@@ -38,7 +38,6 @@ struct JSValue {
         jsvalue = awe_jsvalue_create_string_value(awe_value);
     }
 
-    // TODO: object, array
     this(const(awe_jsobject)* value) {
         jsvalue = awe_jsvalue_create_object_value(value);
     }
