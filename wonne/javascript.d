@@ -113,7 +113,9 @@ struct JSArray {
         return awe_call!awe_jsarray_get_element(jsarray, index);
     }
 
-    // TODO: overloading []
+    const(JSValue) opIndex(size_t index) {
+        return awe_call!awe_jsarray_get_element(jsarray, index);
+    }
 }
 
 struct JSObject {
