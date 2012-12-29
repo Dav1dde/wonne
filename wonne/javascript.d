@@ -1,0 +1,150 @@
+module wonne.javascript;
+
+private {
+    import deimos.awesomium.awesomium;
+
+    import wonne.string : AWEString;
+    import wonne.util : awe_call;
+}
+
+
+struct JSValue {
+    awe_jsvalue* jsvalue;
+    alias jsvalue this;
+
+    this(typeof(null) n) {
+        jsvalue = awe_jsvalue_create_null_value();
+    }
+
+    this(awe_jsvalue* value) {
+        jsvalue = value;
+    }
+
+    this(bool value) {
+        jsvalue = awe_jsvalue_create_bool_value(value);
+    }
+
+    this(int value) {
+        jsvalue = awe_jsvalue_create_integer_value(value);
+    }
+
+    this(double value) {
+        jsvalue = awe_jsvalue_create_double_value(value);
+    }
+
+    this(string value) {
+        auto awe_value = AWEString(value);
+        scope(exit) awe_value.destroy();
+        jsvalue = awe_jsvalue_create_string_value(awe_value);
+    }
+
+    // TODO: object, array
+    this(const(awe_jsobject)* value) {
+        jsvalue = awe_jsvalue_create_object_value(value);
+    }
+
+    this(const(awe_jsarray)* value) {
+        jsvalue = awe_jsvalue_create_array_value(value);
+    }
+
+    void destroy() {
+        awe_jsvalue_destroy(jsvalue);
+    }
+
+    // TODO:awe_jsvalue_type
+    awe_jsvalue_type get_type() {
+        return awe_jsvalue_get_type(jsvalue);
+    }
+
+    string opCast(T : string)() {
+        return awe_call!awe_jsvalue_to_string(jsvalue);
+    }
+
+    int opCast(T : int)() {
+        return awe_call!awe_jsvalue_to_int(jsvalue);
+    }
+
+    double opCast(T : double)() {
+        return awe_call!awe_jsvalue_to_double(jsvalue);
+    }
+
+    bool opCast(T : bool)() {
+        return awe_call!awe_jsvalue_to_bool(jsvalue);
+    }
+
+    // TODO
+    const(awe_jsobject)* opCast(T : awe_jsobject*)() {
+        return awe_call!awe_jsvalue_get_object(jsvalue);
+    }
+
+    const(awe_jsarray)* opCast(T : awe_jsarray*)() {
+        return awe_call!awe_jsvalue_get_jsarray(jsvalue);
+    }
+}
+
+
+struct JSArray {
+    awe_jsarray* jsarray;
+    alias jsarray this;
+
+    this(awe_jsarray* array) {
+        jsarray = array;
+    }
+
+    this(JSValue[] jsvalue_array) {
+        //TODO: fix
+        //jsarray = awe_jsarray_create(jsvalue_array.ptr, jsvalue_array.length);
+    }
+
+    void destroy() {
+        awe_jsarray_destroy(jsarray);
+    }
+
+    @property size_t size() {
+        return awe_call!awe_jsarray_get_size(jsarray);
+    }
+
+    const(JSValue) get_element(size_t index) {
+        return awe_call!awe_jsarray_get_element(jsarray, index);
+    }
+
+    // TODO: overloading []
+}
+
+struct JSObject {
+    awe_jsobject* jsobject;
+    alias jsobject this;
+
+    this(awe_jsobject* object) {
+        jsobject = object;
+    }
+
+    static JSObject opCall() {
+        return awe_call!awe_jsobject_create();
+    }
+
+    void destroy() {
+        awe_jsobject_destroy(jsobject);
+    }
+
+    bool has_property(string property_name) {
+        return awe_call!awe_jsobject_has_property(jsobject, property_name);
+    }
+
+    JSValue get_property(string property_name) {
+        return awe_call!awe_jsobject_get_property(jsobject, property_name);
+    }
+
+    void set_property(string property_name, awe_jsvalue* value) {
+        awe_call!awe_jsobject_set_property(jsobject, property_name, value);
+    }
+
+    @property size_t size() {
+        return awe_call!awe_jsobject_get_size(jsobject);
+    }
+
+    @property JSArray keys() {
+        return awe_call!awe_jsobject_get_keys(jsobject);
+    }
+}
+        

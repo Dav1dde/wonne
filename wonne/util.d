@@ -5,6 +5,7 @@ private {
     
     import wonne.string;
     import wonne.webview;
+    import wonne.javascript;
     import wonne.renderbuffer;
     
     import std.typetuple : TypeTuple, allSatisfy, anySatisfy;
@@ -59,6 +60,7 @@ auto awe_call(alias func, Args...)(Args args) {
     } else {
         auto ret = func(new_args);
 
+        // TODO: constness
         static if(is(RetType : const(awe_string)*)) {
             // There is no need to free an awe_string* coming from awesomium!
             return to!string(AWEString(cast(awe_string*)ret)); // awe_ functions return const(awe_string)*
@@ -66,6 +68,12 @@ auto awe_call(alias func, Args...)(Args args) {
             return new Webview(ret);
         } else static if(is(RetType : const(awe_renderbuffer)*)) {
             return Renderbuffer(ret);
+        } else static if(is(RetType : const(awe_jsvalue)*)) {
+            return JSValue(cast(awe_jsvalue*)ret);
+        } else static if(is(RetType : const(awe_jsarray)*)) {
+            return JSArray(cast(awe_jsarray*)ret);
+        } else static if(is(RetType : const(awe_jsobject)*)) {
+            return JSObject(cast(awe_jsobject*)ret);
         } else {
             return ret;
         }
