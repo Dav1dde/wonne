@@ -16,6 +16,7 @@ class Webview {
 
     this(int width, int height, bool view_source=false) {
         this.webview = awe_webcore_create_webview(width, height, view_source);
+        webviews[webview] = this;
     }
 
     static Webview from_awe_webview(awe_webview* webview) {
@@ -28,10 +29,12 @@ class Webview {
     
     private this(awe_webview* webview, bool other_ctor) {
         this.webview = webview;
+        webviews[webview] = this;
     }
 
     ~this() {
         awe_call!awe_webview_destroy(webview);
+        webviews.remove(webview);
     }
 
     void load_url(string url, string frame_name="", string username="", string password="") {
@@ -292,6 +295,4 @@ class Webview {
     }
 
     // TODO: callback stuff
-
-    
 }

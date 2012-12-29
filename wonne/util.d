@@ -30,7 +30,7 @@ template is_awe_d_string(T) {
 /// It also converts the returntype of the function into a wonne abstraction or a d-type.
 auto awe_call(alias func, Args...)(Args args) {
     static if(anySatisfy!(is_awe_d_string, Args)) {
-        alias convert_strings!(Args) NewArgs;        
+        alias convert_args!(Args) NewArgs;
 
         NewArgs new_args;
 
@@ -91,18 +91,18 @@ auto awe_call(alias func, Args...)(Args args) {
     }
 }
 
-template convert_strings(T...) {
-    alias convert_strings_impl!(T[0..$]) convert_strings;
+template convert_args(T...) {
+    alias convert_args_impl!(T[0..$]) convert_args;
 }
 
-template convert_strings_impl(T...) {
+template convert_args_impl(T...) {
     static if(T.length == 0) {
-        alias TypeTuple!() convert_strings_impl;
+        alias TypeTuple!() convert_args_impl;
     } else static if(is(T[0] == string) || is(T[0] == wstring)) {
-        alias TypeTuple!(AWEString, convert_strings_impl!(T[1..$])) convert_strings_impl;
+        alias TypeTuple!(AWEString, convert_args_impl!(T[1..$])) convert_args_impl;
     } else static if(is(T[0] == string[]) || is(T[0] == wstring[])) {
-        alias TypeTuple!(awe_string**, convert_strings_impl!(T[1..$])) convert_strings_impl;
+        alias TypeTuple!(awe_string**, convert_args_impl!(T[1..$])) convert_args_impl;
     } else {
-        alias TypeTuple!(T[0], convert_strings_impl!(T[1..$])) convert_strings_impl;
+        alias TypeTuple!(T[0], convert_args_impl!(T[1..$])) convert_args_impl;
     }
 }
