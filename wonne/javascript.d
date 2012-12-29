@@ -92,8 +92,13 @@ struct JSArray {
     }
 
     this(JSValue[] jsvalue_array) {
-        //TODO: fix
-        //jsarray = awe_jsarray_create(jsvalue_array.ptr, jsvalue_array.length);
+        awe_jsvalue*[] awe_jsa;
+        awe_jsa.length = jsvalue_array.length;
+        foreach(i, jsv; jsvalue_array) {
+            awe_jsa[i] = jsv.jsvalue;
+        }
+        
+        jsarray = awe_jsarray_create(awe_jsa.ptr, awe_jsa.length);
     }
 
     void destroy() {
