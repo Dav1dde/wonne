@@ -72,12 +72,11 @@ struct JSValue {
         return awe_call!awe_jsvalue_to_bool(jsvalue);
     }
 
-    // TODO
-    const(awe_jsobject)* opCast(T : awe_jsobject*)() {
+    const(JSObject) opCast(T : awe_jsobject*)() {
         return awe_call!awe_jsvalue_get_object(jsvalue);
     }
 
-    const(awe_jsarray)* opCast(T : awe_jsarray*)() {
+    const(JSArray) opCast(T : awe_jsarray*)() {
         return awe_call!awe_jsvalue_get_jsarray(jsvalue);
     }
 }
