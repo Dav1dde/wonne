@@ -5,6 +5,7 @@ private {
     
     import wonne.string;
     import wonne.webview;
+    import wonne.resource;
     import wonne.javascript;
     import wonne.renderbuffer;
     
@@ -73,8 +74,13 @@ auto awe_call(alias func, Args...)(Args args) {
 
         // TODO: constness
         static if(is(RetType : const(awe_string)*)) {
-            // There is no need to free an awe_string* coming from awesomium!
-            return to!string(AWEString(cast(awe_string*)ret)); // awe_ functions return const(awe_string)*
+            // There is no need to free an awe_string* coming from awesomium if it's const!
+            auto s = AWEString(cast(awe_string*)ret);
+            static if(is(RetType == const(awe_string)*)) {
+                scope(exit) s.destroy();
+            }
+            
+            return s.to!string();
         } else static if(is(RetType : awe_webview*)) {
             return Webview.from_awe_webview(ret);
         } else static if(is(RetType : const(awe_renderbuffer)*)) {
@@ -85,6 +91,8 @@ auto awe_call(alias func, Args...)(Args args) {
             return JSArray(cast(awe_jsarray*)ret);
         } else static if(is(RetType : const(awe_jsobject)*)) {
             return JSObject(cast(awe_jsobject*)ret);
+        } else static if(is(RetType : const(awe_upload_element)*)) {
+            return UploadElement(ret);
         } else {
             return ret;
         }
