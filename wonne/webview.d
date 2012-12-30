@@ -17,18 +17,6 @@ private {
 }
 
 
-// callbacks
-// extern(C) {
-//     private:
-//     
-//     void begin_navigation_cb(awe_webview* webview, const(awe_string)* url, const(awe_string)* frame_name) {
-//         auto W = Webview.from_awe_webview(webview);
-//         W.begin_navigation.emit(W, url.to!string(), frame_name.to!string());
-//     }
-// 
-// 
-// }
-
 string make_fake_cb(string cbreg, string[] args...) {
     string signal_name = cbreg[25..$]; // "awe_webview_set_callback_".length = 25
 
