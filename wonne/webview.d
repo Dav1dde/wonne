@@ -1,7 +1,7 @@
 module wonne.webview;
 
 private {
-    import deimos.awesomium.awesomium;
+    import wonne.awesomium;
 
     import wonne.renderbuffer : Renderbuffer;
     import wonne.util : awe_call, isInstanceOf;

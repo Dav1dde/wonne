@@ -1,7 +1,7 @@
 module wonne.javascript;
 
 private {
-    import deimos.awesomium.awesomium;
+    import wonne.awesomium;
 
     import wonne.string : AWEString;
     import wonne.util : awe_call;

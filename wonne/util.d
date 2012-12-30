@@ -1,7 +1,7 @@
 module wonne.util;
 
 private {
-    import deimos.awesomium.awesomium;
+    import wonne.awesomium;
     
     import wonne.string;
     import wonne.webview;

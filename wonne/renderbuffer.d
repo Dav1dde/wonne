@@ -1,7 +1,7 @@
 module wonne.renderbuffer;
 
 private {
-    import deimos.awesomium.awesomium;
+    import wonne.awesomium;
 
     import wonne.util : awe_call;
 }

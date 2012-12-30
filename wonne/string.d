@@ -1,7 +1,7 @@
 module wonne.string;
 
 private {
-    import deimos.awesomium.awesomium;
+    import wonne.awesomium;
 
     import std.string : toStringz;
     import std.utf : toUTF16z;
