@@ -106,3 +106,11 @@ template convert_args_impl(T...) {
         alias TypeTuple!(T[0], convert_args_impl!(T[1..$])) convert_args_impl;
     }
 }
+
+template isInstanceOf(alias S, T)
+{
+    static if (is(T x == S!Args, Args...))
+        enum bool isInstanceOf = true;
+    else
+        enum bool isInstanceOf = false;
+}

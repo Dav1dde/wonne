@@ -5,8 +5,14 @@ private {
 
     import std.string : toStringz;
     import std.utf : toUTF16z;
+    import std.conv : to;
 }
 
+
+string opCast(T : string)(const(awe_string)* value) {
+    auto tmp = AWEString(value);
+    return tmp.to!string();
+}
 
 struct AWEString {
     /// Holds the internal awe_string*

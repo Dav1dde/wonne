@@ -5,18 +5,92 @@ private {
 
     import wonne.renderbuffer : Renderbuffer;
     import wonne.javascript : JSValue;
-    import wonne.util : awe_call;
+    import wonne.util : awe_call, isInstanceOf;
+    import wonne.string;
+
+    import std.signals;
+    import std.conv : to;
+    import std.array : join;
+    import std.string : xformat;
+    import std.typetuple : staticMap;
+    import std.traits : ParameterTypeTuple, fullyQualifiedName;
+}
+
+
+// callbacks
+// extern(C) {
+//     private:
+//     
+//     void begin_navigation_cb(awe_webview* webview, const(awe_string)* url, const(awe_string)* frame_name) {
+//         auto W = Webview.from_awe_webview(webview);
+//         W.begin_navigation.emit(W, url.to!string(), frame_name.to!string());
+//     }
+// 
+// 
+// }
+
+string make_fake_cb(string cbreg, string[] args...) {
+    string signal_name = cbreg[25..$]; // "awe_webview_set_callback_".length = 25
+
+    string[] tmp;
+    string[] tmp2;
+    foreach(i, arg; args) {
+        tmp ~= "%s arg%d".xformat(arg, i);
+        if(arg == "const(awe_string)*") {
+            tmp2 ~= "arg%d.to!string()".xformat(i);
+        } else {
+            tmp2 ~= "arg%d".xformat(i);
+        }
+    }
+    string fargs = tmp.join(", ");
+    string fargs2 = (tmp2[1..$]).join(", ");
+
+    string func = "
+    #line 3000
+    extern(C) static void fake_cb(%s) {
+        auto W = Webview.from_awe_webview(arg0);
+        W.on_%s.emit(W, %s);
+    }".xformat(fargs, signal_name, fargs2);
+
+    return func;
+}
+
+struct SSignal(alias cbreg, T...) {
+    Webview webview;
+
+    alias ParameterTypeTuple!(ParameterTypeTuple!(cbreg)[1]) cbreg_Args;
+
+    private template to_string(T) {
+        enum to_string = T.stringof;
+    }
+
+    alias staticMap!(to_string, cbreg_Args) cbreg_SArgs;
+    enum fake_cb_mixin = make_fake_cb(__traits(identifier, cbreg), cbreg_SArgs);
+    //pragma(msg, make_fake_cb(__traits(identifier, cbreg), cbreg_SArgs));
+    mixin(fake_cb_mixin);
+
+    mixin Signal!(T) hidden;
+    alias hidden this;
+
+    void connect(slot_t slot) {
+        // register the webview/slot only once:
+        if(slots.length == 0) { // 0 means, the first slot to be added
+            cbreg(webview.webview, &fake_cb); // fake_cb is generated above: mixin()
+        }
+        hidden.connect(slot);
+    }
 }
 
 
 class Webview {
-    private awe_webview* webview;
+    package awe_webview* webview;
 
     private static Webview[awe_webview*] webviews;
 
     this(int width, int height, bool view_source=false) {
         this.webview = awe_webcore_create_webview(width, height, view_source);
         webviews[webview] = this;
+        init_signals();
     }
 
     static Webview from_awe_webview(awe_webview* webview) {
@@ -30,11 +104,52 @@ class Webview {
     private this(awe_webview* webview, bool other_ctor) {
         this.webview = webview;
         webviews[webview] = this;
+        init_signals();
     }
 
     ~this() {
         awe_call!awe_webview_destroy(webview);
         webviews.remove(webview);
+    }
+
+    // TODO: awe_jsarray n' stuff
+    SSignal!(awe_webview_set_callback_begin_navigation, Webview, string, string) on_begin_navigation;
+    SSignal!(awe_webview_set_callback_begin_loading, Webview, string, string, int, string) on_begin_loading;
+    SSignal!(awe_webview_set_callback_finish_loading, Webview) on_finish_loading;
+    SSignal!(awe_webview_set_callback_js_callback, Webview, string, string, const(awe_jsarray)*) on_js_callback;
+    SSignal!(awe_webview_set_callback_receive_title, Webview, string, string) on_receive_title;
+    SSignal!(awe_webview_set_callback_change_tooltip, Webview, string) on_change_tooltip;
+    SSignal!(awe_webview_set_callback_change_cursor, Webview, awe_cursor_type) on_change_cursor;
+    SSignal!(awe_webview_set_callback_change_keyboard_focus, Webview, bool) on_change_keyboard_focus;
+    SSignal!(awe_webview_set_callback_change_target_url, Webview, string) on_change_target_url;
+    SSignal!(awe_webview_set_callback_open_external_link, Webview, string, string) on_open_external_link;
+    SSignal!(awe_webview_set_callback_request_download, Webview, string) on_request_download;
+    SSignal!(awe_webview_set_callback_web_view_crashed, Webview) on_web_view_crashed;
+    SSignal!(awe_webview_set_callback_request_move, Webview, int, int) on_request_move;
+    SSignal!(awe_webview_set_callback_get_page_contents, Webview, string, string) on_get_page_contents;
+    SSignal!(awe_webview_set_callback_dom_ready, Webview) on_dom_ready;
+    SSignal!(awe_webview_set_callback_request_file_chooser, Webview, bool, string, string) on_request_file_chooser;
+    SSignal!(awe_webview_set_callback_get_scroll_data, Webview, int, int, int, int, int) on_get_scroll_data;
+    SSignal!(awe_webview_set_callback_js_console_message, Webview, string, int, string) on_js_console_message;
+    SSignal!(awe_webview_set_callback_get_find_results, Webview, int, int, awe_rect, int, bool) on_get_find_results;
+    SSignal!(awe_webview_set_callback_update_ime, Webview, awe_ime_state, awe_rect) on_update_ime;
+    SSignal!(awe_webview_set_callback_show_context_menu, Webview, int, int, awe_media_type, int,
+                                                         string, string, string, string, string,
+                                                         bool, int) on_show_context_menu;
+    SSignal!(awe_webview_set_callback_request_login, Webview, int, string, bool, string, string, string) on_request_login;
+    SSignal!(awe_webview_set_callback_change_history, Webview, int, int) on_change_history;
+    SSignal!(awe_webview_set_callback_finish_resize, Webview, int, int) on_finish_resize;
+    SSignal!(awe_webview_set_callback_show_javascript_dialog, Webview, int, int, string, string, string) on_show_javascript_dialog;
+
+    private void init_signals() {
+        foreach(member; __traits(allMembers, typeof(this))) {
+            static if(__traits(compiles, typeof(mixin(member)))) {
+                alias typeof(mixin(member)) MType;
+                static if(isInstanceOf!(SSignal, MType)) {
+                    mixin("%s.webview = this;".xformat(member));
+                }
+            }
+        }
     }
 
     void load_url(string url, string frame_name="", string username="", string password="") {
@@ -223,7 +338,6 @@ class Webview {
         awe_call!awe_webview_clear_all_url_filters(webview);
     }
 
-    // TODO: fix string arrays
     void set_header_definition(string name, string[] field_names, string[] field_values)
         in { assert(field_names.length == field_values.length, "field_names.length doesn't match field_values.length"); }
         body {
@@ -293,6 +407,4 @@ class Webview {
     void close_javascript_dialog(int request_id, bool was_cancelled, string prompt_text) {
         awe_call!awe_webview_close_javascript_dialog(webview, request_id, was_cancelled, prompt_text);
     }
-
-    // TODO: callback stuff
 }
