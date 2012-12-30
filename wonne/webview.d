@@ -4,14 +4,15 @@ private {
     import deimos.awesomium.awesomium;
 
     import wonne.renderbuffer : Renderbuffer;
-    import wonne.javascript : JSValue;
     import wonne.util : awe_call, isInstanceOf;
+    import wonne.javascript;
     import wonne.string;
 
     import std.signals;
     import std.conv : to;
     import std.array : join;
     import std.string : xformat;
+    import std.algorithm : canFind;
     import std.typetuple : staticMap;
     import std.traits : ParameterTypeTuple, fullyQualifiedName;
 }
@@ -24,8 +25,10 @@ string make_fake_cb(string cbreg, string[] args...) {
     string[] tmp2;
     foreach(i, arg; args) {
         tmp ~= "%s arg%d".xformat(arg, i);
-        if(arg == "const(awe_string)*") {
+        if(arg.canFind("awe_string")) {
             tmp2 ~= "arg%d.to!string()".xformat(i);
+        } else if(arg.canFind("awe_jsarray")) {
+            tmp2 ~= "JSArray(cast(awe_jsarray*)arg%d)".xformat(i);
         } else {
             tmp2 ~= "arg%d".xformat(i);
         }
@@ -100,11 +103,10 @@ class Webview {
         webviews.remove(webview);
     }
 
-    // TODO: awe_jsarray n' stuff
     SSignal!(awe_webview_set_callback_begin_navigation, Webview, string, string) on_begin_navigation;
     SSignal!(awe_webview_set_callback_begin_loading, Webview, string, string, int, string) on_begin_loading;
     SSignal!(awe_webview_set_callback_finish_loading, Webview) on_finish_loading;
-    SSignal!(awe_webview_set_callback_js_callback, Webview, string, string, const(awe_jsarray)*) on_js_callback;
+    SSignal!(awe_webview_set_callback_js_callback, Webview, string, string, JSArray) on_js_callback;
     SSignal!(awe_webview_set_callback_receive_title, Webview, string, string) on_receive_title;
     SSignal!(awe_webview_set_callback_change_tooltip, Webview, string) on_change_tooltip;
     SSignal!(awe_webview_set_callback_change_cursor, Webview, awe_cursor_type) on_change_cursor;
