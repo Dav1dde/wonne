@@ -29,16 +29,28 @@ void initialize(bool enable_plugins, bool enable_javascript, bool enable_databas
                                     user_agent_override, proxy_server, proxy_config_script,
                                     auth_server_whitelist, save_cache_and_cookies, max_cache_size,
                                     disable_same_origin_policy, disable_win_message_pump, custom_css);
+    _needs_shutdown = true;
 }
 
 //alias awe_webcore_initialize_default initialize_default;
 void initialize_default() {
     awe_call!awe_webcore_initialize_default();
+    _needs_shutdown = true;
 }
+
+private static _needs_shutdown = false;
+private static _is_shutdown = false;
 
 //alias awe_webcore_shutdown shutdown;
 void shutdown() {
     awe_call!awe_webcore_shutdown();
+    _is_shutdown = true;
+}
+
+static ~this() {
+    if(_needs_shutdown && !_is_shutdown) {
+        shutdown();
+    }
 }
 
 void set_base_directory(string base_dir_path) {

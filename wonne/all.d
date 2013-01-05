@@ -4,6 +4,7 @@ module wonne.all;
 
 public {
     import wonne.awesomium;
+    import wonne.exception;
     import wonne.history;
     import wonne.javascript;
     import wonne.renderbuffer;

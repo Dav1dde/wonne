@@ -3,13 +3,21 @@ module wonne.renderbuffer;
 private {
     import wonne.awesomium;
 
+    import wonne.exception;
     import wonne.util : awe_call;
+
+    import std.exception : enforceEx;
 }
 
 
 struct Renderbuffer {
     const(awe_renderbuffer)* renderbuffer;
     alias renderbuffer this;
+
+    this(const(awe_renderbuffer)* renderbuffer) {
+        enforceEx!WebviewException(renderbuffer !is null, "renderbuffer is null, most likely the webview crashed");
+        this.renderbuffer = renderbuffer;
+    }
 
     @property int width() {
         return awe_call!awe_renderbuffer_get_width(renderbuffer);
