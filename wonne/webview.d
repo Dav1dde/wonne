@@ -266,7 +266,6 @@ class Webview {
         awe_call!awe_webview_inject_mouse_wheel(webview, scroll_amount_vert, scroll_amount_horz);
     }
 
-    // TODO: webkeyboardevent
     void inject_keyboard_event(awe_webkeyboardevent key_event) {
         awe_call!awe_webview_inject_keyboard_event(webview, key_event);
     }
