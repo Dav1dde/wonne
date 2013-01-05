@@ -5,6 +5,7 @@ private {
     import wonne.awesomium;
 
     import wonne.string;
+    import wonne.history;
     import wonne.webview;
     import wonne.util : awe_call, is_awe_string;
 
@@ -93,7 +94,6 @@ void set_suppress_printer_dialog(bool suppress) {
     awe_call!awe_webcore_set_suppress_printer_dialog(suppress);
 }
 
-// TODO: returntype
-auto query_history(string full_text_query, int num_days_ago, int max_count) {
+HistoryQueryResult query_history(string full_text_query, int num_days_ago, int max_count) {
     return awe_call!awe_webcore_query_history(full_text_query, num_days_ago, max_count);
 }

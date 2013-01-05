@@ -215,7 +215,6 @@ class Webview {
         awe_call!awe_webview_destroy_object(webview, object_name);
     }
 
-    // TODO: jsvalue
     void set_object_property(string object_name, string property_name, const(awe_jsvalue)* value) {
         awe_call!awe_webview_set_object_property(webview, object_name, property_name, value);
     }
