@@ -5,6 +5,7 @@ private {
 
     import wonne.renderbuffer : Renderbuffer;
     import wonne.util : awe_call, isInstanceOf;
+    import wonne.resource;
     import wonne.javascript;
     import wonne.string;
 
@@ -29,6 +30,8 @@ string make_fake_cb(string cbreg, string[] args...) {
             tmp2 ~= "arg%d.to!string()".xformat(i);
         } else if(arg.canFind("awe_jsarray")) {
             tmp2 ~= "JSArray(cast(awe_jsarray*)arg%d)".xformat(i);
+        } else if(arg.canFind("awe_resource_request")) {
+            tmp2 ~= "ResourceRequest(arg%d)".xformat(i);
         } else {
             tmp2 ~= "arg%d".xformat(i);
         }
@@ -38,7 +41,7 @@ string make_fake_cb(string cbreg, string[] args...) {
 
     string func = "
     #line 3000
-    extern(C) static void fake_cb(%s) {
+    extern(C) static auto fake_cb(%s) {
         auto W = Webview.from_awe_webview(arg0);
         W.on_%s.emit(W, %s);
     }".xformat(fargs, signal_name, fargs2);
@@ -130,6 +133,7 @@ class Webview {
     SSignal!(awe_webview_set_callback_change_history, Webview, int, int) on_change_history;
     SSignal!(awe_webview_set_callback_finish_resize, Webview, int, int) on_finish_resize;
     SSignal!(awe_webview_set_callback_show_javascript_dialog, Webview, int, int, string, string, string) on_show_javascript_dialog;
+    SSignal!(awe_webview_set_callback_resource_response, Webview, string, int, bool, long, long, long, string) on_resource_response;
 
     private void init_signals() {
         foreach(member; __traits(allMembers, typeof(this))) {
@@ -140,6 +144,19 @@ class Webview {
                 }
             }
         }
+    }
+
+    package ResourceResponse delegate(Webview, ResourceRequest) _on_resource_request;
+    void set_resource_request_callback(ResourceResponse delegate(Webview, ResourceRequest) dg) {
+        _on_resource_request = dg;
+        
+        static extern(C) awe_resource_response* fake_cb(awe_webview* arg0, awe_resource_request* arg1) {
+            auto W = Webview.from_awe_webview(arg0);
+            return W._on_resource_request(W, ResourceRequest(arg1));
+        }
+
+        awe_webview_set_callback_resource_request(webview, &fake_cb);
+
     }
 
     void load_url(string url, string frame_name="", string username="", string password="") {

@@ -8,8 +8,9 @@ private {
 }
 
 
-struct Response {
+struct ResourceResponse {
     awe_resource_response* response;
+    alias response this;
 
     this(ubyte[] buffer, string mime_type) {
         auto mime_type_awe = AWEString(mime_type);
@@ -23,7 +24,7 @@ struct Response {
 }
 
 
-struct Request {
+struct ResourceRequest {
     awe_resource_request* request;
     alias request this;
 
