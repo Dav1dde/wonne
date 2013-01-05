@@ -5,6 +5,7 @@ private {
     
     import wonne.string;
     import wonne.webview;
+    import wonne.history;
     import wonne.resource;
     import wonne.javascript;
     import wonne.renderbuffer;
@@ -93,6 +94,10 @@ auto awe_call(alias func, Args...)(Args args) {
             return JSObject(cast(awe_jsobject*)ret);
         } else static if(is(RetType : const(awe_upload_element)*)) {
             return UploadElement(ret);
+        } else static if(is(RetType : awe_history_query_result*)) {
+            return HistoryQueryResult(ret);
+        } else static if(is(RetType : awe_history_entry*)) {
+            return HistoryEntry(ret);
         } else {
             return ret;
         }
