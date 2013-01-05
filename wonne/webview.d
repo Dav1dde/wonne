@@ -51,6 +51,7 @@ string make_fake_cb(string cbreg, string[] args...) {
 
 struct SSignal(alias cbreg, T...) {
     Webview webview;
+    private bool callback_set = false;
 
     alias ParameterTypeTuple!(ParameterTypeTuple!(cbreg)[1]) cbreg_Args;
 
@@ -68,8 +69,9 @@ struct SSignal(alias cbreg, T...) {
 
     void connect(slot_t slot) {
         // register the webview/slot only once:
-        if(slots.length == 0) { // 0 means, the first slot to be added
+        if(!callback_set) { // is it the first callback registered to the slot?
             cbreg(webview.webview, &fake_cb); // fake_cb is generated above: mixin()
+            callback_set = true;
         }
         hidden.connect(slot);
     }
