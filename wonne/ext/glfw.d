@@ -5,6 +5,9 @@ private {
     import wonne.webview : Webview;
 
     import glwtf.glfw;
+    import glwtf.window : Window;
+
+    import std.functional : curry;
 }
 
 
@@ -19,11 +22,6 @@ extern(C) struct webkeyboardevent {
     wchar[4] unmodified_text = [0, 0, 0, 0];
     bool is_system_key;
 }
-
-// TODO
-// A helper module to forward glfw keycodes to an awesomium webview
-
-// std.functional.curry is your friend!
 
 static const int[] GLFW_FUNCTION_KEYS_TO_AWE_KEYS = [
     0x1B, // GLFW_KEY_ESCAPE
@@ -114,6 +112,7 @@ static const int[] GLFW_FUNCTION_KEYS_TO_AWE_KEYS = [
 static assert(GLFW_FUNCTION_KEYS_TO_AWE_KEYS[GLFW_KEY_MENU-GLFW_KEY_ESCAPE] == 0x12);
 static assert(GLFW_FUNCTION_KEYS_TO_AWE_KEYS.length == (GLFW_KEY_MENU-GLFW_KEY_ESCAPE+1));
 
+
 int glfw_key_to_awe_key(int key) {
     switch(key) {
         case GLFW_KEY_SPACE: return 0x20;
@@ -141,68 +140,95 @@ int glfw_key_to_awe_key(int key) {
 }
 
 
-void inject_mouse_pos(Webview webview, int x, int y) {
-    webview.inject_mouse_move(x, y);
-}
 
-private void inject_mouse_button(Webview webview, int button, bool down) {
-    awe_mousebutton mb;
+// This has to be a class, if it's not a class std.signals will freak out when
+// the instance goes out of scope and segfault
+class GLFWBridge {
+    Webview webview;
 
-    switch(button) {
-        case GLFW_MOUSE_BUTTON_LEFT: mb = awe_mousebutton.AWE_MB_LEFT; break;
-        case GLFW_MOUSE_BUTTON_MIDDLE: mb = awe_mousebutton.AWE_MB_MIDDLE; break;
-        case GLFW_MOUSE_BUTTON_RIGHT: mb = awe_mousebutton.AWE_MB_RIGHT; break;
-        default: return;
+    this(Webview webview) {
+        this.webview = webview;
     }
 
-    if(down) {
-        webview.inject_mouse_down(mb);
-    } else {
-        webview.inject_mouse_up(mb);
+    this(Webview webview, Window window) {
+        this(webview);
+        connect_to_window(window);
     }
-}
 
-void inject_mouse_button_down(Webview webview, int button) {
-    inject_mouse_button(webview, button, true);
-}
+    void connect_to_window(Window window) {
+        window.on_mouse_pos.connect(&inject_mouse_pos);
+        window.on_mouse_button_down.connect(&inject_mouse_button_down);
+        window.on_mouse_button_up.connect(&inject_mouse_button_up);
+        window.on_scroll.connect(&inject_mouse_scroll!(70));
+        window.on_char.connect(&inject_char);
+        window.on_key_down.connect(&inject_key_down);
+        window.on_key_up.connect(&inject_key_up);
+    }
+    
+    
+    void inject_mouse_pos(int x, int y) {
+        webview.inject_mouse_move(x, y);
+    }
 
-void inject_mouse_button_up(Webview webview, int button) {
-    inject_mouse_button(webview, button, false);
-}
+    private void inject_mouse_button(int button, bool down) {
+        awe_mousebutton mb;
 
-void inject_mouse_scroll(int mult = 70)(Webview webview, double x, double y) {
-    webview.inject_mouse_wheel(cast(int)y*70, cast(int)x*70);
-}
+        switch(button) {
+            case GLFW_MOUSE_BUTTON_LEFT: mb = awe_mousebutton.AWE_MB_LEFT; break;
+            case GLFW_MOUSE_BUTTON_MIDDLE: mb = awe_mousebutton.AWE_MB_MIDDLE; break;
+            case GLFW_MOUSE_BUTTON_RIGHT: mb = awe_mousebutton.AWE_MB_RIGHT; break;
+            default: return;
+        }
 
-void inject_char(Webview webview, dchar c) {
-    wchar[] wc = (cast(wchar*)&c)[0..2];
+        if(down) {
+            webview.inject_mouse_down(mb);
+        } else {
+            webview.inject_mouse_up(mb);
+        }
+    }
 
-    webkeyboardevent keyevent;
-    keyevent.type = awe_webkey_type.AWE_WKT_CHAR;
-    keyevent.modifiers = 0;
-    keyevent.virtual_key_code = cast(int)c;
-    keyevent.native_key_code = 0;
-    keyevent.text[0..2] = wc;
+    void inject_mouse_button_down(int button) {
+        inject_mouse_button(button, true);
+    }
 
-    webview.inject_keyboard_event(cast(awe_webkeyboardevent)keyevent);
-}
+    void inject_mouse_button_up(int button) {
+        inject_mouse_button(button, false);
+    }
 
-private void inject_key(Webview webview, int key, bool down) {
-    int key_awe = glfw_key_to_awe_key(key);
+    void inject_mouse_scroll(int mult = 70)(double x, double y) {
+        webview.inject_mouse_wheel(cast(int)y*70, cast(int)x*70);
+    }
 
-    webkeyboardevent keyevent;
-    keyevent.type = down ? awe_webkey_type.AWE_WKT_KEYDOWN : awe_webkey_type.AWE_WKT_KEYUP;
-    keyevent.modifiers = 0;
-    keyevent.virtual_key_code = key_awe;
-    keyevent.native_key_code = key;
+    void inject_char(dchar c) {
+        wchar[] wc = (cast(wchar*)&c)[0..2];
 
-    webview.inject_keyboard_event(cast(awe_webkeyboardevent)keyevent);
-}
+        webkeyboardevent keyevent;
+        keyevent.type = awe_webkey_type.AWE_WKT_CHAR;
+        keyevent.modifiers = 0;
+        keyevent.virtual_key_code = cast(int)c;
+        keyevent.native_key_code = 0;
+        keyevent.text[0..2] = wc;
 
-void inject_key_down(Webview webview, int key) {
-    inject_key(webview, key, true);
-}
+        webview.inject_keyboard_event(cast(awe_webkeyboardevent)keyevent);
+    }
 
-void inject_key_up(Webview webview, int key) {
-    inject_key(webview, key, false);
+    private void inject_key(int key, bool down) {
+        int key_awe = glfw_key_to_awe_key(key);
+
+        webkeyboardevent keyevent;
+        keyevent.type = down ? awe_webkey_type.AWE_WKT_KEYDOWN : awe_webkey_type.AWE_WKT_KEYUP;
+        keyevent.modifiers = 0;
+        keyevent.virtual_key_code = key_awe;
+        keyevent.native_key_code = key;
+
+        webview.inject_keyboard_event(cast(awe_webkeyboardevent)keyevent);
+    }
+
+    void inject_key_down(int key) {
+        inject_key(key, true);
+    }
+
+    void inject_key_up(int key) {
+        inject_key(key, false);
+    }
 }
