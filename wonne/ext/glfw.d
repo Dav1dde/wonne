@@ -1,11 +1,17 @@
 module wonne.ext.glfw;
 
+version(GLFWAWEBridge) {
+
 private {
     import wonne.awesomium;
     import wonne.webview : Webview;
 
-    import glwtf.glfw;
-    import glwtf.window : Window;
+    version(NoGLWTF) {
+        import deimos.glfw.glfw3;
+    } else {
+        import glwtf.glfw;
+        import glwtf.window : Window;
+    }
 
     import std.functional : curry;
 }
@@ -150,21 +156,22 @@ class GLFWBridge {
         this.webview = webview;
     }
 
-    this(Webview webview, Window window) {
-        this(webview);
-        connect_to_window(window);
-    }
+    version(NoGLWTF) {} else {
+        this(Webview webview, Window window) {
+            this(webview);
+            connect_to_window(window);
+        }
 
-    void connect_to_window(Window window) {
-        window.on_mouse_pos.connect(&inject_mouse_pos);
-        window.on_mouse_button_down.connect(&inject_mouse_button_down);
-        window.on_mouse_button_up.connect(&inject_mouse_button_up);
-        window.on_scroll.connect(&inject_mouse_scroll!(70));
-        window.on_char.connect(&inject_char);
-        window.on_key_down.connect(&inject_key_down);
-        window.on_key_up.connect(&inject_key_up);
+        void connect_to_window(Window window) {
+            window.on_mouse_pos.connect(&inject_mouse_pos);
+            window.on_mouse_button_down.connect(&inject_mouse_button_down);
+            window.on_mouse_button_up.connect(&inject_mouse_button_up);
+            window.on_scroll.connect(&inject_mouse_scroll!(70));
+            window.on_char.connect(&inject_char);
+            window.on_key_down.connect(&inject_key_down);
+            window.on_key_up.connect(&inject_key_up);
+        }
     }
-    
     
     void inject_mouse_pos(int x, int y) {
         webview.inject_mouse_move(x, y);
@@ -232,3 +239,5 @@ class GLFWBridge {
         inject_key(key, false);
     }
 }
+
+} // end version(GLFWAWEBridge) {
