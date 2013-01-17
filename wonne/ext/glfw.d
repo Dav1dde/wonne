@@ -98,7 +98,7 @@ static const int[] GLFW_FUNCTION_KEYS_TO_AWE_KEYS = [
     0x6A, // GLFW_KEY_KP_MULTIPLY
     0x6D, // GLFW_KEY_KP_SUBTRACT
     0x6B, // GLFW_KEY_KP_ADD
-    0x0D, // GLFW_KEY_KP_ENTER
+    0x6C, // GLFW_KEY_KP_ENTER
     0x00, // GLFW_KEY_KP_EQUAL -- No awe equivalent
 
     0x00, 0x00, 0x00,
@@ -130,7 +130,7 @@ int glfw_key_to_awe_key(int key) {
         case GLFW_KEY_0: ..
             case GLFW_KEY_9: return key;
         case GLFW_KEY_SEMICOLON: return 0x00;
-        case GLFW_KEY_EQUAL: return 0x00;
+        case GLFW_KEY_EQUAL: return 0xBB;
         case GLFW_KEY_A: ..
             case GLFW_KEY_Z: return key;
         case GLFW_KEY_LEFT_BRACKET: return 0x00;
