@@ -149,7 +149,7 @@ int glfw_key_to_awe_key(int key) {
 
 // This has to be a class, if it's not a class std.signals will freak out when
 // the instance goes out of scope and segfault
-class GLFWBridge {
+class GLFWAWEBridge {
     Webview webview;
 
     this(Webview webview) {
