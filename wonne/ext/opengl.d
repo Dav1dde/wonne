@@ -36,7 +36,6 @@ fragment:
     void main()
     {
         outputColor = texture2D(browser, v_texcoord);
-        //outputColor = vec4(0.7f, 0.3f, 0.5f * v_texcoord.x, 1.0f);
     }";
 
 enum float[] VERTEX_DATA = [
@@ -59,7 +58,7 @@ class WebviewRenderer {
 
     protected Shader shader;
     protected Buffer vbo;
-    protected Texture2D texture;
+    Texture2D texture;
     
     this(Webview webview, string shader_source=DEFAULT_SHADER) {
         this.webview = webview;
