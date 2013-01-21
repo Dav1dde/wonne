@@ -8,6 +8,7 @@ private {
     import glamour.gl;
     import glamour.shader : Shader;
     import glamour.vbo : Buffer;
+    import glamour.vao : VAO;
     import glamour.texture : Texture2D;
 }
 
@@ -58,21 +59,37 @@ class WebviewRenderer {
 
     protected Shader shader;
     protected Buffer vbo;
+    protected VAO vao;
     Texture2D texture;
     
     this(Webview webview, string shader_source=DEFAULT_SHADER) {
         this.webview = webview;
 
         shader = new Shader("WebviewRenderer", shader_source);
-        vbo = new Buffer(VERTEX_DATA);
+
+        vao = new VAO();
+        vbo = new Buffer();
+        
+        vao.bind();
+        vbo.bind();
+
+        vbo.set_data(VERTEX_DATA);
+
+        GLuint position = shader.get_attrib_location("position");
+        GLuint texcoord = shader.get_attrib_location("texcoord");
+
+        vbo.bind(position, GL_FLOAT, 2,    0,              4*float.sizeof);
+        vbo.bind(texcoord, GL_FLOAT, 2,    2*float.sizeof, 4*float.sizeof);
+
+        vao.unbind();
+        
         texture = new Texture2D();
     }
 
     void display() {
         shader.bind();
 
-        GLuint position = shader.get_attrib_location("position");
-        GLuint texcoord = shader.get_attrib_location("texcoord");
+        vao.bind();
 
         shader.uniform1i("browser", 0);
 
@@ -81,9 +98,6 @@ class WebviewRenderer {
         }
 
         texture.bind_and_activate();
-
-        vbo.bind(position, GL_FLOAT, 2,    0,              4*float.sizeof);
-        vbo.bind(texcoord, GL_FLOAT, 2,    2*float.sizeof, 4*float.sizeof);
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
