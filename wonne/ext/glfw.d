@@ -229,6 +229,10 @@ class GLFWAWEBridge {
         keyevent.native_key_code = key;
 
         webview.inject_keyboard_event(cast(awe_webkeyboardevent)keyevent);
+
+        if(key == GLFW_KEY_ENTER) {
+            inject_char(cast(dchar)key_awe);
+        }
     }
 
     void inject_key_down(int key) {
