@@ -111,6 +111,13 @@ class WebviewRenderer {
             }
         }
     }
+
+    void remove() {
+        vao.remove();
+        vbo.remove();
+        texture.remove();
+        shader.remove();
+    }
 }
 
 
