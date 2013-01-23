@@ -203,7 +203,7 @@ class GLFWAWEBridge {
     }
 
     void inject_mouse_scroll(int mult = 70)(double x, double y) {
-        webview.inject_mouse_wheel(cast(int)y*70, cast(int)x*70);
+        webview.inject_mouse_wheel(cast(int)y*mult, cast(int)x*mult);
     }
 
     void inject_char(dchar c) {
