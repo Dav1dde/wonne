@@ -1,33 +1,37 @@
 module wonne.wonne;
 
+
 private {
-    import std.traits : ReturnType;
+    static import wonne.awesomium;
+
+    static import std.algorithm;
+    static import std.traits;
+    static import core.runtime;
+
+    version(Windows) {
+        static import core.sys.windows.windows;
+    }
 }
+
 
 
 mixin template AWESingleProcessMain(alias real_main) {
     int main() {
-        import wonne.awesomium;
-
         version(Windows) {
-            import core.sys.windows.windows;
-            
-            auto handle = GetModuleHandleA(null);
-            if(awe_is_child_process(handle)) {
+            auto handle = core.sys.windows.windows.GetModuleHandleA(null);
+            if(wonne.awesomium.awe_is_child_process(handle)) {
                 debug writefln("Lanching awesomium child: %s", handle);
-                return awe_child_process_main(handle);
+                return wonne.awesomium.awe_child_process_main(handle);
             }
         } else {
-            import std.algorithm;
-            import core.runtime;
-            
-            if(Runtime.args.countUntil!(x => x.startsWith("--type")) >= 0) {
-                debug writefln("Lanching awesomium child: %s", Runtime.args);
-                return awe_child_process_main(Runtime.cArgs.argc, Runtime.cArgs.argv);
+            if(std.algorithm.countUntil!(`a.length > 6 && a[0..6] == "--type"`)(core.runtime.Runtime.args) >= 0) {
+                debug writefln("Lanching awesomium child: %s", core.runtime.Runtime.args);
+                return wonne.awesomium.awe_child_process_main(core.runtime.Runtime.cArgs.argc,
+                                                              core.runtime.Runtime.cArgs.argv);
             }
         }
 
-        static if(is(ReturnType!real_main : int)) {
+        static if(is(std.traits.ReturnType!real_main : int)) {
             return real_main();
         } else {
             real_main();
