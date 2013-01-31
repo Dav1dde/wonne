@@ -333,6 +333,9 @@ class Webview {
         return awe_call!awe_webview_is_transparent(webview);
     }
 
+    @property void transparent(bool is_transparent) { set_transparent(is_transparent); }
+    @property bool transparent() { return is_transparent(); }
+
     void set_url_filtering_mode(awe_url_filtering_mode mode) {
         awe_call!awe_webview_set_url_filtering_mode(webview, mode);
     }
