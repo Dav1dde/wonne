@@ -13,4 +13,5 @@ public {
     //import wonne.util; // this isn't any help for the end-user
     import webcore = wonne.webcore;
     import wonne.webview;
+    import wonne.wonne;
 }
