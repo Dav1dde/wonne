@@ -32,9 +32,17 @@ mixin template AWESingleProcessMain(alias real_main) {
         }
 
         static if(is(std.traits.ReturnType!real_main : int)) {
-            return real_main();
+            static if(std.traits.ParameterTypeTuple!(real_main).length == 1) {
+                return real_main(core.runtime.Runtime.args);
+            } else {
+                return real_main();
+            }
         } else {
-            real_main();
+            static if(std.traits.ParameterTypeTuple!(real_main).length == 1) {
+                real_main(core.runtime.Runtime.args);
+            } else {
+                real_main();
+            }
         }
 
         return 0;
