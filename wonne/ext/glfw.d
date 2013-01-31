@@ -171,6 +171,16 @@ class GLFWAWEBridge {
             window.on_key_down.connect(&inject_key_down);
             window.on_key_up.connect(&inject_key_up);
         }
+
+        void disconnect_from_window(Window window) {
+            window.on_mouse_pos.disconnect(&inject_mouse_pos);
+            window.on_mouse_button_down.disconnect(&inject_mouse_button_down);
+            window.on_mouse_button_up.disconnect(&inject_mouse_button_up);
+            window.on_scroll.disconnect(&inject_mouse_scroll!(70));
+            window.on_char.disconnect(&inject_char);
+            window.on_key_down.disconnect(&inject_key_down);
+            window.on_key_up.disconnect(&inject_key_up);
+        }
     }
     
     void inject_mouse_pos(int x, int y) {
