@@ -170,6 +170,8 @@ class GLFWAWEBridge {
             window.on_char.connect(&inject_char);
             window.on_key_down.connect(&inject_key_down);
             window.on_key_up.connect(&inject_key_up);
+
+            window.on_resize.connect(&resize);
         }
 
         void disconnect_from_window(Window window) {
@@ -180,6 +182,8 @@ class GLFWAWEBridge {
             window.on_char.disconnect(&inject_char);
             window.on_key_down.disconnect(&inject_key_down);
             window.on_key_up.disconnect(&inject_key_up);
+
+            window.on_resize.disconnect(&resize);
         }
     }
     
@@ -251,6 +255,10 @@ class GLFWAWEBridge {
 
     void inject_key_up(int key) {
         inject_key(key, false);
+    }
+
+    void resize(int width, int height) {
+        webview.resize(width, height, true, 500);
     }
 }
 
