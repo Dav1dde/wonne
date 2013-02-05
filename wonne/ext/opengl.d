@@ -105,7 +105,7 @@ class WebviewRenderer {
     void update_texture() {
         auto render_buffer = webview.render();
 
-        if(render_buffer !is null) {
+        if(render_buffer.renderbuffer !is null) {
             with(render_buffer) {
                 texture.set_data(buffer, GL_RGBA, width, height, GL_BGRA, GL_UNSIGNED_BYTE);
             }

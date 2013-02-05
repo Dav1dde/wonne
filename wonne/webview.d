@@ -79,7 +79,7 @@ struct SSignal(alias cbreg, T...) {
     }
 }
 
-/// Destroy the webview! webview.destroy() (destroy = object_.d:destroy)
+/// Destroy the webview!
 class Webview {
     package awe_webview* webview;
 
