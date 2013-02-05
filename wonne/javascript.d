@@ -68,7 +68,7 @@ struct JSValue {
     }
 
     bool opCast(T : bool)() const {
-        return awe_call!awe_jsvalue_to_bool(jsvalue);
+        return awe_call!awe_jsvalue_to_boolean(jsvalue);
     }
 
     const(JSObject) opCast(T : awe_jsobject*)() {
