@@ -51,23 +51,23 @@ struct JSValue {
     }
 
     // TODO:awe_jsvalue_type
-    awe_jsvalue_type get_type() {
+    awe_jsvalue_type get_type() const {
         return awe_jsvalue_get_type(jsvalue);
     }
 
-    string opCast(T : string)() {
+    string opCast(T : string)() const {
         return awe_call!awe_jsvalue_to_string(jsvalue);
     }
 
-    int opCast(T : int)() {
+    int opCast(T : int)() const {
         return awe_call!awe_jsvalue_to_int(jsvalue);
     }
 
-    double opCast(T : double)() {
+    double opCast(T : double)() const {
         return awe_call!awe_jsvalue_to_double(jsvalue);
     }
 
-    bool opCast(T : bool)() {
+    bool opCast(T : bool)() const {
         return awe_call!awe_jsvalue_to_bool(jsvalue);
     }
 
