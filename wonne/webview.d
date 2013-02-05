@@ -27,7 +27,7 @@ string make_fake_cb(string cbreg, string[] args...) {
     foreach(i, arg; args) {
         tmp ~= "%s arg%d".xformat(arg, i);
         if(arg.canFind("awe_string")) {
-            tmp2 ~= "arg%d.to!string()".xformat(i);
+            tmp2 ~= "AWEString(cast(awe_string*)arg%d).opCast!(string)()".xformat(i);
         } else if(arg.canFind("awe_jsarray")) {
             tmp2 ~= "JSArray(cast(awe_jsarray*)arg%d)".xformat(i);
         } else if(arg.canFind("awe_resource_request")) {
