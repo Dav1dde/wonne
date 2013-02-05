@@ -16,6 +16,8 @@ private {
     import std.algorithm : canFind;
     import std.typetuple : staticMap;
     import std.traits : ParameterTypeTuple, fullyQualifiedName;
+
+    debug import std.stdio : stderr;
 }
 
 
@@ -96,16 +98,25 @@ class Webview {
 
         return new Webview(webview, true);
     }
-    
+
     private this(awe_webview* webview, bool other_ctor) {
         this.webview = webview;
         webviews[webview] = this;
         init_signals();
     }
 
-    ~this() {
+    void destroy() {
         awe_call!awe_webview_destroy(webview);
         webviews.remove(webview);
+        webview = null;
+    }
+
+    ~this() {
+        debug {
+            if(webview !is null) {
+                stderr.writefln("awesomium webview not destroyed!");
+            }
+        }
     }
 
     SSignal!(awe_webview_set_callback_begin_navigation, Webview, string, string) on_begin_navigation;
@@ -151,7 +162,7 @@ class Webview {
     package ResourceResponse delegate(Webview, ResourceRequest) _on_resource_request;
     void set_resource_request_callback(ResourceResponse delegate(Webview, ResourceRequest) dg) {
         _on_resource_request = dg;
-        
+
         static extern(C) awe_resource_response* fake_cb(awe_webview* arg0, awe_resource_request* arg1) {
             auto W = Webview.from_awe_webview(arg0);
             return W._on_resource_request(W, ResourceRequest(arg1));
